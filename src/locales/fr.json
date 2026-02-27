@@ -1,0 +1,26 @@
+{
+    "translation": {
+        "dashboard": "Tableau de bord",
+        "timetable": "Parcours de traitement",
+        "adherence": "Confirmer l'adhésion",
+        "supplements": "Suppléments",
+        "nutrition": "Nutrition",
+        "tier_gold": "Niveau Or",
+        "tier_silver": "Niveau Argent",
+        "tier_bronze": "Niveau Bronze",
+        "auth_welcome": "Bienvenue chez The Iridologist",
+        "auth_desc": "Veuillez vérifier votre numéro pour continuer.",
+        "auth_country": "Pays sélectionné",
+        "auth_phone": "Numéro de téléphone",
+        "auth_send_otp": "Envoyer le code OTP",
+        "auth_enter_code": "Entrez le code à 6 chiffres envoyé à",
+        "auth_verify": "Vérifier le code",
+        "auth_change_number": "Changer le numéro de téléphone",
+        "auth_success_title": "Vérification réussie",
+        "auth_success_desc": "Votre profil patient sécurisé est prêt.",
+        "app_welcome": "Bon retour dans votre parcours de guérison personnalisé.",
+        "app_active": "Actif",
+        "dev_toggle": "Démo: Changement d'écran",
+        "delivery_loc": "Lieu de livraison"
+    }
+}

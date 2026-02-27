@@ -1,0 +1,26 @@
+{
+    "translation": {
+        "dashboard": "لوحة متابعة العلاج",
+        "timetable": "رحلة العلاج",
+        "adherence": "تأكيد الالتزام",
+        "supplements": "المكملات الغذائية",
+        "nutrition": "التغذية",
+        "tier_gold": "الباقة الذهبية",
+        "tier_silver": "الباقة الفضية",
+        "tier_bronze": "الباقة البرونزية",
+        "auth_welcome": "مرحباً بكم في The Iridologist",
+        "auth_desc": "يرجى التحقق من رقمك للمتابعة.",
+        "auth_country": "البلد المختار",
+        "auth_phone": "رقم الهاتف",
+        "auth_send_otp": "إرسال رمز التحقق",
+        "auth_enter_code": "أدخل الرمز المكون من 6 أرقام المرسل إلى",
+        "auth_verify": "تأكيد الرمز",
+        "auth_change_number": "تغيير رقم الهاتف",
+        "auth_success_title": "اكتمل التحقق بنجاح",
+        "auth_success_desc": "ملف تعريف المريض الآمن الخاص بك جاهز.",
+        "app_welcome": "مرحباً بعودتك إلى رحلة الشفاء المخصصة لك.",
+        "app_active": "نشط",
+        "dev_toggle": "تطوير: تبديل الشاشة",
+        "delivery_loc": "موقع التوصيل"
+    }
+}

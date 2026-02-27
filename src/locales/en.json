@@ -1,0 +1,26 @@
+{
+    "translation": {
+        "dashboard": "Healing Dashboard",
+        "timetable": "Treatment Journey",
+        "adherence": "Confirm Adherence",
+        "supplements": "Supplements",
+        "nutrition": "Nutrition",
+        "tier_gold": "Gold Tier",
+        "tier_silver": "Silver Tier",
+        "tier_bronze": "Bronze Tier",
+        "auth_welcome": "Welcome to The Iridologist",
+        "auth_desc": "Please verify your number to continue.",
+        "auth_country": "Selected Country",
+        "auth_phone": "Phone Number",
+        "auth_send_otp": "Send OTP",
+        "auth_enter_code": "Enter the 6-digit code sent to",
+        "auth_verify": "Verify Code",
+        "auth_change_number": "Change phone number",
+        "auth_success_title": "Verification Successful",
+        "auth_success_desc": "Your secure patient profile is ready.",
+        "app_welcome": "Welcome back to your personalized healing journey.",
+        "app_active": "Active",
+        "dev_toggle": "Dev: Screen Toggle",
+        "delivery_loc": "Delivery Location"
+    }
+}
