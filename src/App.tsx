@@ -12,7 +12,8 @@ import {
     ChefHat, ArrowLeftRight, Plus,
     Aperture, CircleDot, Scan, Timer,
     BellRing, CalendarCheck, MessageSquare,
-    Video, Monitor, Truck, Weight, Globe, MapPin
+    Video, Monitor, Truck, Weight, Globe, MapPin,
+    Phone, LogOut, HelpCircle
 } from 'lucide-react';
 import './index.css';
 
@@ -447,6 +448,8 @@ const VitalityPage: React.FC<{
     if (state === 'review') return <UnderReviewUI fileId={fileId} />;
 
     // STATE: READY TO BOOK (Milestone 3→4)
+    const [bookPayMethod, setBookPayMethod] = useState<'CreditCard' | 'Whish' | 'OMT' | 'WU'>('CreditCard');
+    const [bookReceipt, setBookReceipt] = useState<File | null>(null);
     if (state === 'ready') {
         const today = new Date();
         const calDays: { day: number; dow: string; available: boolean }[] = [];
@@ -456,6 +459,13 @@ const VitalityPage: React.FC<{
             const isWknd = d.getDay() === 0 || d.getDay() === 6;
             calDays.push({ day: d.getDate(), dow: dows[d.getDay()], available: !isWknd && !blockedDays.has(d.getDate()) });
         }
+
+        const manualInstructions: Record<string, { label: string; detail: string }> = {
+            Whish: { label: 'Whish Money Transfer', detail: 'Send $150.00 to Dr. Philippe Hadathy via Whish. Reference: Your File ID.' },
+            OMT: { label: 'OMT Transfer', detail: 'Send $150.00 to Dr. Philippe Hadathy via OMT. Contact: +961 3 573 574' },
+            WU: { label: 'Western Union', detail: 'Send $150.00 to Dr. Philippe Hadathy via Western Union. Contact: +961 3 573 574' },
+        };
+
         return (
             <div className="page-body">
                 <div className="ready-banner">
@@ -480,15 +490,66 @@ const VitalityPage: React.FC<{
                     {selectedBookingDay && (
                         <div className="cal-selected-info"><Calendar size={14} color="#007AFF" /><span>Selected: {selectedBookingDay}th — 10:00 AM</span></div>
                     )}
-                    {visitPaid ? (
-                        <div className="gate-status-inline pending" style={{ marginTop: 12 }}><Clock size={14} /> Awaiting Dr. Philippe's Confirmation</div>
-                    ) : (
-                        <button className="gate-lock-btn" style={{ marginTop: 12 }} disabled={!selectedBookingDay}
-                            onClick={() => onOpenGate('First Visit Booking', 150, 'Book your first in-person consultation with Dr. Philippe.')}>
-                            <Lock size={14} /> Confirm Booking — $150.00
-                        </button>
-                    )}
                 </div>
+
+                {/* PAYMENT TABS for $150 */}
+                {!visitPaid && selectedBookingDay && (
+                    <div className="card" style={{ marginTop: 8 }}>
+                        <p className="card-title" style={{ marginBottom: 10 }}>Consultation Fee — $150.00</p>
+                        <div className="pay-tabs">
+                            {(['CreditCard', 'Whish', 'OMT', 'WU'] as const).map(m => (
+                                <button key={m} className={`pay-tab ${bookPayMethod === m ? 'active' : ''}`} onClick={() => setBookPayMethod(m)}>
+                                    {m === 'CreditCard' && <><CreditCard size={12} /> Card</>}
+                                    {m === 'Whish' && 'Whish'}{m === 'OMT' && 'OMT'}{m === 'WU' && 'WesternUnion'}
+                                </button>
+                            ))}
+                        </div>
+
+                        {bookPayMethod === 'CreditCard' ? (
+                            <div className="cc-form">
+                                <p className="cc-label">Credit / Debit Card</p>
+                                <label className="cc-field-label">CARD NUMBER</label>
+                                <input className="cc-input" placeholder="4242 4242 4242 4242" />
+                                <div className="cc-row">
+                                    <div><label className="cc-field-label">EXPIRY</label><input className="cc-input" placeholder="MM/YY" /></div>
+                                    <div><label className="cc-field-label">CVC</label><input className="cc-input" placeholder="123" /></div>
+                                </div>
+                                <button className="blue-btn" style={{ marginTop: 12, width: '100%' }}
+                                    onClick={() => onOpenGate('First Visit Booking', 150, 'Book your first in-person consultation with Dr. Philippe.')}>
+                                    <Lock size={14} /> Pay $150.00
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="manual-pay-section">
+                                <div className="manual-pay-info">
+                                    <p className="manual-pay-title">{manualInstructions[bookPayMethod].label}</p>
+                                    <p className="manual-pay-detail">{manualInstructions[bookPayMethod].detail}</p>
+                                    <p className="manual-pay-contact"><Phone size={12} /> Dr. Philippe Hadathy · +961 3 573 574</p>
+                                </div>
+                                <div className="receipt-upload">
+                                    <label className="cc-field-label">UPLOAD RECEIPT</label>
+                                    <label className="receipt-drop">
+                                        <Upload size={18} color="#007AFF" />
+                                        <span>{bookReceipt ? bookReceipt.name : 'Tap to upload proof of transfer'}</span>
+                                        <input type="file" accept="image/*,.pdf" style={{ display: 'none' }}
+                                            onChange={e => setBookReceipt(e.target.files?.[0] || null)} />
+                                    </label>
+                                </div>
+                                <button className="blue-btn" style={{ marginTop: 12, width: '100%' }} disabled={!bookReceipt}
+                                    onClick={() => onOpenGate('First Visit Booking', 150, 'Book your first in-person consultation with Dr. Philippe.')}>
+                                    <Upload size={14} /> Submit Receipt — $150.00
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {visitPaid && (
+                    <div className="card" style={{ marginTop: 8 }}>
+                        <div className="gate-status-inline pending"><Clock size={14} /> Awaiting Dr. Philippe's Confirmation</div>
+                    </div>
+                )}
+
                 <div className="card free-checkup-card">
                     <div className="gate-card-header">
                         <div className="gate-card-icon" style={{ background: 'rgba(34,197,94,0.1)' }}><CheckCircle2 size={18} color="#22C55E" /></div>
@@ -503,6 +564,7 @@ const VitalityPage: React.FC<{
 
     // STATE: DASHBOARD
     const [checkupMode, setCheckupMode] = useState<'online' | 'inperson'>('online');
+    const [showContact, setShowContact] = useState(false);
     return (
         <div className="page-body">
             {appointmentStatus === 'confirmed' && (
@@ -558,6 +620,29 @@ const VitalityPage: React.FC<{
             <TaskItem icon={<Pill size={18} />} name="Vitamin D3 & K2" time="08:00 AM · 2 Drops" />
             <TaskItem icon={<Apple size={18} />} name="Anti-inflammatory Smoothie" time="08:30 AM" />
             <TaskItem icon={<Pill size={18} />} name="Omega 3 Fish Oil" time="01:00 PM · 1 Capsule" />
+
+            {/* Contact Portal FAB */}
+            <button className="contact-fab" onClick={() => setShowContact(!showContact)}>
+                <HelpCircle size={22} />
+            </button>
+            {showContact && (
+                <div className="contact-sheet">
+                    <div className="contact-sheet-header">
+                        <p className="card-title">Contact Dr. Philippe</p>
+                        <button className="contact-close" onClick={() => setShowContact(false)}><X size={16} /></button>
+                    </div>
+                    <a href="https://wa.me/9613573574" target="_blank" rel="noopener noreferrer" className="contact-option whatsapp">
+                        <MessageSquare size={18} />
+                        <div><span className="contact-opt-title">WhatsApp Dr. Philippe</span><span className="contact-opt-sub">Chat directly on WhatsApp</span></div>
+                        <ChevronRight size={14} />
+                    </a>
+                    <a href="tel:+9613573574" className="contact-option call">
+                        <Phone size={18} />
+                        <div><span className="contact-opt-title">Call Dr. Philippe</span><span className="contact-opt-sub">+961 3 573 574</span></div>
+                        <ChevronRight size={14} />
+                    </a>
+                </div>
+            )}
         </div>
     );
 };
@@ -774,6 +859,14 @@ const JourneyPage: React.FC<{
     }
 
     const [selectedDay, setSelectedDay] = useState<number | null>(null);
+    const [jBookPay, setJBookPay] = useState<'CreditCard' | 'Whish' | 'OMT' | 'WU'>('CreditCard');
+    const [jReceipt, setJReceipt] = useState<File | null>(null);
+
+    const jManual: Record<string, { label: string; detail: string }> = {
+        Whish: { label: 'Whish Money Transfer', detail: 'Send $150.00 to Dr. Philippe Hadathy via Whish. Reference: Your File ID.' },
+        OMT: { label: 'OMT Transfer', detail: 'Send $150.00 to Dr. Philippe Hadathy via OMT. Contact: +961 3 573 574' },
+        WU: { label: 'Western Union', detail: 'Send $150.00 to Dr. Philippe Hadathy via Western Union. Contact: +961 3 573 574' },
+    };
 
     // Meals to display: synced program or defaults
     const displayMeals = activeProgram || DEFAULT_MEALS;
@@ -842,15 +935,65 @@ const JourneyPage: React.FC<{
                 {selectedDay && (
                     <div className="cal-selected-info"><Calendar size={14} color="#007AFF" /><span>Selected: {selectedDay}th — 10:00 AM</span></div>
                 )}
-                {visitPaid ? (
-                    <div className="gate-status-inline pending" style={{ marginTop: 12 }}><Clock size={14} /> Awaiting Admin Approval</div>
-                ) : (
-                    <button className="gate-lock-btn" style={{ marginTop: 12 }}
-                        onClick={() => onOpenGate('First Visit Booking', 150, 'Book your first in-person consultation with Dr. Philippe. One-time clinical assessment fee.')}>
-                        <Lock size={14} /> Book — $150.00 Consultation Fee
-                    </button>
-                )}
             </div>
+
+            {/* PAYMENT TABS for $150 — inline on Journey */}
+            {!visitPaid && selectedDay && (
+                <div className="card" style={{ marginTop: 8 }}>
+                    <p className="card-title" style={{ marginBottom: 10 }}>Consultation Fee — $150.00</p>
+                    <div className="pay-tabs">
+                        {(['CreditCard', 'Whish', 'OMT', 'WU'] as const).map(m => (
+                            <button key={m} className={`pay-tab ${jBookPay === m ? 'active' : ''}`} onClick={() => setJBookPay(m)}>
+                                {m === 'CreditCard' && <><CreditCard size={12} /> Card</>}
+                                {m === 'Whish' && 'Whish'}{m === 'OMT' && 'OMT'}{m === 'WU' && 'WesternUnion'}
+                            </button>
+                        ))}
+                    </div>
+
+                    {jBookPay === 'CreditCard' ? (
+                        <div className="cc-form">
+                            <p className="cc-label">Credit / Debit Card</p>
+                            <label className="cc-field-label">CARD NUMBER</label>
+                            <input className="cc-input" placeholder="4242 4242 4242 4242" />
+                            <div className="cc-row">
+                                <div><label className="cc-field-label">EXPIRY</label><input className="cc-input" placeholder="MM/YY" /></div>
+                                <div><label className="cc-field-label">CVC</label><input className="cc-input" placeholder="123" /></div>
+                            </div>
+                            <button className="blue-btn" style={{ marginTop: 12, width: '100%' }}
+                                onClick={() => onOpenGate('First Visit Booking', 150, 'Book your first in-person consultation with Dr. Philippe.')}>
+                                <Lock size={14} /> Pay $150.00
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="manual-pay-section">
+                            <div className="manual-pay-info">
+                                <p className="manual-pay-title">{jManual[jBookPay].label}</p>
+                                <p className="manual-pay-detail">{jManual[jBookPay].detail}</p>
+                                <p className="manual-pay-contact"><Phone size={12} /> Dr. Philippe Hadathy · +961 3 573 574</p>
+                            </div>
+                            <div className="receipt-upload">
+                                <label className="cc-field-label">UPLOAD RECEIPT</label>
+                                <label className="receipt-drop">
+                                    <Upload size={18} color="#007AFF" />
+                                    <span>{jReceipt ? jReceipt.name : 'Tap to upload proof of transfer'}</span>
+                                    <input type="file" accept="image/*,.pdf" style={{ display: 'none' }}
+                                        onChange={e => setJReceipt(e.target.files?.[0] || null)} />
+                                </label>
+                            </div>
+                            <button className="blue-btn" style={{ marginTop: 12, width: '100%' }} disabled={!jReceipt}
+                                onClick={() => onOpenGate('First Visit Booking', 150, 'Book your first in-person consultation with Dr. Philippe.')}>
+                                <Upload size={14} /> Submit Receipt — $150.00
+                            </button>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {visitPaid && (
+                <div className="card" style={{ marginTop: 8 }}>
+                    <div className="gate-status-inline pending"><Clock size={14} /> Awaiting Admin Approval</div>
+                </div>
+            )}
 
             <div className="card free-checkup-card">
                 <div className="gate-card-header">
@@ -927,7 +1070,7 @@ const VaultPage: React.FC<{
                 </div>
                 <div className="roadmap-signature">
                     <div className="roadmap-sig-line">
-                        <span className="roadmap-sig-name">Dr. Philippe Mounir</span>
+                        <span className="roadmap-sig-name">Dr. Philippe Hadathy</span>
                         <span className="roadmap-sig-title">Clinical Iridologist</span>
                     </div>
                     <div className="roadmap-sig-stamp"><Shield size={12} color="#007AFF" /> Verified</div>
@@ -1019,6 +1162,11 @@ const VaultPage: React.FC<{
                     )}
                 </div>
             )}
+
+            {/* Logout */}
+            <button className="logout-btn" onClick={() => { localStorage.clear(); window.location.reload(); }}>
+                <LogOut size={14} /> Log Out
+            </button>
         </div>
     );
 };
@@ -1043,11 +1191,27 @@ const FinancialsTab: React.FC<{ fileId: string }> = ({ fileId }) => (
         </div>
         <p className="card-title" style={{ marginTop: 14, marginBottom: 8 }}>Pending Approvals</p>
         <div className="approval-item">
-            <div className="approval-dot" /><div className="task-info"><span className="task-name">Iris Scan — $250</span><span className="task-time">{fileId} · Submitted 2h ago</span></div>
+            <div className="approval-dot" />
+            <div className="task-info">
+                <span className="task-name"><span className="approval-cat iris">Iris Fee</span> Iris Scan — $250</span>
+                <span className="task-time">{fileId} · Submitted 2h ago</span>
+            </div>
             <button className="task-action">Review</button>
         </div>
         <div className="approval-item">
-            <div className="approval-dot" /><div className="task-info"><span className="task-name">First Visit — $150</span><span className="task-time">{fileId} · Submitted 30m ago</span></div>
+            <div className="approval-dot" />
+            <div className="task-info">
+                <span className="task-name"><span className="approval-cat consult">Consultation</span> First Visit — $150</span>
+                <span className="task-time">{fileId} · Submitted 30m ago</span>
+            </div>
+            <button className="task-action">Review</button>
+        </div>
+        <div className="approval-item">
+            <div className="approval-dot" style={{ background: '#22C55E' }} />
+            <div className="task-info">
+                <span className="task-name"><span className="approval-cat supplement">Supplement</span> Vitamin D3 & K2 Order</span>
+                <span className="task-time">{fileId} · Submitted 15m ago</span>
+            </div>
             <button className="task-action">Review</button>
         </div>
     </div>
